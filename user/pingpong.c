@@ -9,21 +9,25 @@ int main(int argc,char* argv[]){
     pipe(p_c2p);
 
     int pid = fork();
-    if(pid!=0){   //父进程
+    if(pid!=0){ //父进程
+        close(p_p2c[0]);
+        close(p_c2p[1]);
         write(p_p2c[1],"*",1);
         close(p_p2c[1]);
         char buf;
         read(p_c2p[0],&buf,1);
+        close(p_c2p[0]);
         printf("%d:recieved pong\n",getpid());
         wait(0);
-    }else{ //子进程
+    }else{  //子进程
         char buf;
+        close(p_p2c[1]);
+        close(p_c2p[0]);
         read(p_p2c[0],&buf,1);
+        close(p_p2c[0]);
         printf("%d:received ping\n",getpid());
         write(p_c2p[1],&buf,1);
         close(p_c2p[1]);
     }
-    close(p_c2p[0]);
-    close(p_p2c[0]);
     exit(0);
 }
